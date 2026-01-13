@@ -42,7 +42,7 @@ class EventCreate(BaseModel):
         return v
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "name": "Janmashtami Festival",
                 "description": "Celebration of Lord Krishna's birth",

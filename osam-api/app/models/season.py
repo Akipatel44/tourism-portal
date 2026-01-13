@@ -64,11 +64,6 @@ class Season(Base):
         back_populates="season",
         cascade="all, delete-orphan"
     )
-    places = relationship(
-        "Place",
-        secondary="seasonal_availabilities",
-        back_populates="seasons"
-    )
     
     def __repr__(self):
         return f"<Season(season_id={self.season_id}, name='{self.name}')>"

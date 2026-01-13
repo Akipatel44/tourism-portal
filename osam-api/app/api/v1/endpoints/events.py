@@ -8,8 +8,10 @@ from typing import List
 from datetime import date
 
 from app.models.database import get_db
+from app.models.user import User
 from app.services.event_service import EventService
 from app.schemas.event import EventCreate, EventUpdate, EventResponse, EventListResponse
+from app.core.dependencies import get_current_admin
 
 router = APIRouter(prefix="/events", tags=["events"])
 
@@ -17,9 +19,10 @@ router = APIRouter(prefix="/events", tags=["events"])
 @router.post("/", response_model=EventResponse, status_code=201)
 def create_event(
     event_data: EventCreate,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Create a new event."""
+    """Create a new event (admin only)."""
     service = EventService(db)
     try:
         event = service.create(**event_data.dict())
@@ -212,9 +215,10 @@ def get_events_with_facilities(
 def update_event(
     event_id: int,
     event_data: EventUpdate,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Update an event."""
+    """Update an event (admin only)."""
     service = EventService(db)
     try:
         event = service.update(event_id, **event_data.dict(exclude_unset=True))
@@ -228,9 +232,10 @@ def update_event(
 @router.delete("/{event_id}", status_code=204)
 def delete_event(
     event_id: int,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Delete an event."""
+    """Delete an event (admin only)."""
     service = EventService(db)
     success = service.delete(event_id)
     if not success:
@@ -241,9 +246,10 @@ def delete_event(
 @router.post("/{event_id}/status/update", status_code=200)
 def update_event_status(
     event_id: int,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Auto-update event status based on current date."""
+    """Auto-update event status based on current date (admin only)."""
     service = EventService(db)
     try:
         result = service.update_event_status(event_id)
@@ -257,6 +263,7 @@ def update_event_status(
 @router.post("/{event_id}/featured", status_code=200)
 def toggle_event_featured(
     event_id: int,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
     """Toggle featured status for an event."""

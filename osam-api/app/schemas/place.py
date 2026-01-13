@@ -41,7 +41,7 @@ class PlaceCreate(BaseModel):
         return v
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "name": "Osam Hill",
                 "description": "Beautiful hill with scenic views",

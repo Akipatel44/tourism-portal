@@ -24,7 +24,7 @@ class ErrorResponse(BaseModel):
     error_code: Optional[str] = Field(None, description="Error code for client handling")
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "detail": "Place not found",
                 "error_code": "PLACE_NOT_FOUND"
@@ -39,7 +39,7 @@ class SuccessResponse(BaseModel):
     message: str = Field(description="Success message")
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "success": True,
                 "message": "Place created successfully"

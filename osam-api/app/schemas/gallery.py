@@ -18,7 +18,7 @@ class GalleryImageCreate(BaseModel):
     image_order: int = Field(default=0, ge=0, description="Display order")
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "image_url": "/images/osam_hill_1.jpg",
                 "thumbnail_url": "/images/osam_hill_1_thumb.jpg",
@@ -76,7 +76,7 @@ class GalleryCreate(BaseModel):
         return v
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "name": "Osam Hill Photo Collection",
                 "gallery_type": "photos",
@@ -164,7 +164,7 @@ class ReorderImagesRequest(BaseModel):
     image_order: Dict[int, int] = Field(..., description="Mapping of image_id to new order")
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "image_order": {
                     "1": 2,

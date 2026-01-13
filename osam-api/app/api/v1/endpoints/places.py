@@ -7,8 +7,10 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.models.database import get_db
+from app.models.user import User
 from app.services.place_service import PlaceService
 from app.schemas.place import PlaceCreate, PlaceUpdate, PlaceResponse, PlaceListResponse
+from app.core.dependencies import get_current_admin
 
 router = APIRouter(prefix="/places", tags=["places"])
 
@@ -16,9 +18,10 @@ router = APIRouter(prefix="/places", tags=["places"])
 @router.post("/", response_model=PlaceResponse, status_code=201)
 def create_place(
     place_data: PlaceCreate,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Create a new place."""
+    """Create a new place (admin only)."""
     service = PlaceService(db)
     try:
         place = service.create(**place_data.dict())
@@ -174,9 +177,10 @@ def get_places_with_facilities(
 def update_place(
     place_id: int,
     place_data: PlaceUpdate,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Update a place."""
+    """Update a place (admin only)."""
     service = PlaceService(db)
     try:
         place = service.update(place_id, **place_data.dict(exclude_unset=True))
@@ -190,9 +194,10 @@ def update_place(
 @router.delete("/{place_id}", status_code=204)
 def delete_place(
     place_id: int,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Delete a place."""
+    """Delete a place (admin only)."""
     service = PlaceService(db)
     success = service.delete(place_id)
     if not success:
@@ -203,9 +208,10 @@ def delete_place(
 @router.post("/{place_id}/featured", status_code=200)
 def toggle_place_featured(
     place_id: int,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Toggle featured status for a place."""
+    """Toggle featured status for a place (admin only)."""
     service = PlaceService(db)
     try:
         result = service.toggle_featured(place_id)

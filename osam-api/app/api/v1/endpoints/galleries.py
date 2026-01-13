@@ -7,12 +7,14 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.models.database import get_db
+from app.models.user import User
 from app.services.gallery_service import GalleryService
 from app.schemas.gallery import (
     GalleryCreate, GalleryUpdate, GalleryResponse, GalleryListResponse,
     GalleryImageCreate, GalleryImageResponse, ReorderImagesRequest,
     GalleryStatisticsResponse
 )
+from app.core.dependencies import get_current_admin
 
 router = APIRouter(prefix="/galleries", tags=["galleries"])
 
@@ -20,9 +22,10 @@ router = APIRouter(prefix="/galleries", tags=["galleries"])
 @router.post("/", response_model=GalleryResponse, status_code=201)
 def create_gallery(
     gallery_data: GalleryCreate,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Create a new gallery."""
+    """Create a new gallery (admin only)."""
     service = GalleryService(db)
     try:
         gallery = service.create(**gallery_data.dict())
@@ -167,9 +170,10 @@ def get_popular_galleries(
 def update_gallery(
     gallery_id: int,
     gallery_data: GalleryUpdate,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Update a gallery."""
+    """Update a gallery (admin only)."""
     service = GalleryService(db)
     try:
         gallery = service.update(gallery_id, **gallery_data.dict(exclude_unset=True))
@@ -183,9 +187,10 @@ def update_gallery(
 @router.delete("/{gallery_id}", status_code=204)
 def delete_gallery(
     gallery_id: int,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Delete a gallery."""
+    """Delete a gallery (admin only)."""
     service = GalleryService(db)
     success = service.delete(gallery_id)
     if not success:
@@ -196,9 +201,10 @@ def delete_gallery(
 @router.post("/{gallery_id}/featured", status_code=200)
 def toggle_gallery_featured(
     gallery_id: int,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Toggle featured status for a gallery."""
+    """Toggle featured status for a gallery (admin only)."""
     service = GalleryService(db)
     try:
         result = service.toggle_featured(gallery_id)
@@ -215,9 +221,10 @@ def toggle_gallery_featured(
 def add_image_to_gallery(
     gallery_id: int,
     image_data: GalleryImageCreate,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Add an image to a gallery."""
+    """Add an image to a gallery (admin only)."""
     service = GalleryService(db)
     try:
         image = service.add_image_to_gallery(gallery_id, **image_data.dict())
@@ -259,9 +266,10 @@ def get_gallery_image(
 def remove_image_from_gallery(
     gallery_id: int,
     image_id: int,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Remove an image from a gallery."""
+    """Remove an image from a gallery (admin only)."""
     service = GalleryService(db)
     try:
         success = service.remove_image_from_gallery(image_id)
@@ -276,9 +284,10 @@ def remove_image_from_gallery(
 def reorder_gallery_images(
     gallery_id: int,
     reorder_data: ReorderImagesRequest,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Reorder images in a gallery."""
+    """Reorder images in a gallery (admin only)."""
     service = GalleryService(db)
     try:
         success = service.reorder_images(gallery_id, reorder_data.image_order)
@@ -293,6 +302,7 @@ def reorder_gallery_images(
 def set_featured_image(
     gallery_id: int,
     image_id: int,
+    current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
     """Set an image as featured for a gallery."""
