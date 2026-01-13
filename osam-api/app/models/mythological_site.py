@@ -4,7 +4,7 @@ Stores stories, legends, and cultural significance of sites.
 """
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Text, Boolean, Enum, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, Boolean, Enum, DateTime, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
 from app.models.database import Base
 

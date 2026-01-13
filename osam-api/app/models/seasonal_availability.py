@@ -4,7 +4,7 @@ Tracks accessibility of places during specific seasons.
 """
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, Enum, Text, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, Boolean, Enum, Text, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.models.database import Base
 

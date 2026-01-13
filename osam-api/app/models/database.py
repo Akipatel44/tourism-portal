@@ -9,7 +9,8 @@ from sqlalchemy.pool import QueuePool
 
 # Database URL configuration
 # Format: mysql+pymysql://username:password@host:port/database
-DATABASE_URL = "mysql+pymysql://root:@localhost:3306/osam_tourism"
+DATABASE_URL = "mysql+pymysql://akshay:AKS%402025elite@localhost:3306/osam_tourism"
+
 
 # Create SQLAlchemy engine
 engine = create_engine(
