@@ -22,5 +22,11 @@ export { default as GalleryPage } from "../pages/GalleryPage";
 export { default as AdminDashboard } from "../pages/AdminDashboard";
 export { default as ProtectedRoute } from "./ProtectedRoute";
 
+// Utility Components
+export { default as Loader } from "./Loader";
+export { default as EmptyState } from "./EmptyState";
+export { default as ErrorMessage } from "./ErrorMessage";
+export { default as Skeleton } from "./Skeleton";
+
 // Main App
 export { default as App } from "../App";
