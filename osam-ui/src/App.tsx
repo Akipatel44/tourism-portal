@@ -6,20 +6,24 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./pages/HomePage";
 import PlacesPage from "./pages/PlacesPage";
-import {
-  MythologyPage,
-  NaturePage,
-  EventsPage,
-  GalleryPage,
-  VisitGuidePage,
-  AdminPage,
-} from "./pages/PageStubs";
+import PlaceDetailPage from "./pages/PlaceDetailPage";
+import MythologyPage from "./pages/MythologyPage";
+import NaturePage from "./pages/NaturePage";
+import EventsPage from "./pages/EventsPage";
+import TrekkingPage from "./pages/TrekkingPage";
+import VisitorGuidePage from "./pages/VisitorGuidePage";
+import GalleryPage from "./pages/GalleryPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const App: React.FC = () => {
   const SITE_LOGO = "https://via.placeholder.com/50x50?text=OSAM";
   const SITE_NAME = "Osam Hill & Chichod";
+  
+  // Mock authentication - in real app, check actual auth state
+  const isAdminAuthenticated = true;
 
   return (
     <Router>
@@ -28,14 +32,23 @@ const App: React.FC = () => {
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/places" element={<PlacesPage />} />
+          <Route path="/places/:id" element={<PlaceDetailPage />} />
           <Route path="/mythology" element={<MythologyPage />} />
           <Route path="/nature" element={<NaturePage />} />
+          <Route path="/trekking" element={<TrekkingPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
-          <Route path="/visit-guide" element={<VisitGuidePage />} />
+          <Route path="/visitor-guide" element={<VisitorGuidePage />} />
 
-          {/* Admin Route (Protected - add authentication) */}
-          <Route path="/admin" element={<AdminPage />} />
+          {/* Protected Admin Route */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute isAuthenticated={isAdminAuthenticated}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
 
           {/* 404 Page */}
           <Route

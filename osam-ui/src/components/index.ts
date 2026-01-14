@@ -12,14 +12,15 @@ export { Layout } from "./Layout";
 // Page Components
 export { default as HomePage } from "../pages/HomePage";
 export { default as PlacesPage } from "../pages/PlacesPage";
-export {
-  MythologyPage,
-  NaturePage,
-  EventsPage,
-  GalleryPage,
-  VisitGuidePage,
-  AdminPage,
-} from "../pages/PageStubs";
+export { default as PlaceDetailPage } from "../pages/PlaceDetailPage";
+export { default as MythologyPage } from "../pages/MythologyPage";
+export { default as NaturePage } from "../pages/NaturePage";
+export { default as EventsPage } from "../pages/EventsPage";
+export { default as TrekkingPage } from "../pages/TrekkingPage";
+export { default as VisitorGuidePage } from "../pages/VisitorGuidePage";
+export { default as GalleryPage } from "../pages/GalleryPage";
+export { default as AdminDashboard } from "../pages/AdminDashboard";
+export { default as ProtectedRoute } from "./ProtectedRoute";
 
 // Main App
 export { default as App } from "../App";
