@@ -195,7 +195,7 @@ const PlaceDetailPage: React.FC = () => {
                 {categoryColor.text}
               </span>
               <div className="flex items-center gap-1">
-                <span className="text-yellow-400">⭐</span>
+                <span className="text-yellow-400">★</span>
                 <span className="font-bold text-forest-800">{PLACE_DETAIL.rating}</span>
               </div>
             </div>
@@ -307,7 +307,7 @@ const PlaceDetailPage: React.FC = () => {
                       key={idx}
                       className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
                     >
-                      <span className="text-2xl">📍</span>
+                      <span className="text-2xl">◐</span>
                       <div>
                         <p className="font-semibold text-forest-800">{place}</p>
                       </div>
@@ -429,7 +429,7 @@ const PlaceDetailPage: React.FC = () => {
                     description: 'Local vegetarian restaurants nearby. Temple offers free meals to devotees.',
                   },
                   {
-                    icon: '📸',
+                    icon: '◇',
                     title: 'Photography',
                     description: 'Best light during golden hour. Permit may be required for commercial shoots.',
                   },
@@ -461,7 +461,7 @@ const PlaceDetailPage: React.FC = () => {
                 className="text-left bg-white rounded-lg shadow hover:shadow-lg transition-all hover:-translate-y-1 p-6 group"
               >
                 <div className="h-40 bg-gradient-to-br from-forest-100 to-accent-mint/20 rounded-lg mb-4 flex items-center justify-center text-4xl">
-                  📍
+                  ◐
                 </div>
                 <h4 className="text-lg font-bold text-forest-800 group-hover:text-forest-600 mb-1">
                   {related.name}

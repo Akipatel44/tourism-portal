@@ -118,9 +118,9 @@ const PlacesPage: React.FC = () => {
 
   const categories = [
     { id: 'all', label: 'All Places', icon: '🌍', color: 'forest' },
-    { id: 'temple', label: 'Temples', icon: '🏛️', color: 'accent-gold' },
-    { id: 'mythology', label: 'Mythology', icon: '📚', color: 'monsoon' },
-    { id: 'nature', label: 'Nature', icon: '🌲', color: 'green' },
+    { id: 'temple', label: 'Temples', icon: '▦', color: 'amber-500' },
+    { id: 'mythology', label: 'Mythology', icon: '■', color: 'purple-500' },
+    { id: 'nature', label: 'Nature', icon: '◆', color: 'emerald-500' },
   ];
 
   return (
@@ -227,7 +227,7 @@ const PlacesPage: React.FC = () => {
 
                     {/* Rating Badge */}
                     <div className="absolute top-4 left-4 z-10 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 flex items-center gap-1">
-                      <span className="text-yellow-400 text-lg">⭐</span>
+                      <span className="text-yellow-400 text-lg">★</span>
                       <span className="font-bold text-forest-800">{place.rating}</span>
                     </div>
 
@@ -251,13 +251,13 @@ const PlacesPage: React.FC = () => {
                     <div className="grid grid-cols-2 gap-3 mb-5 pb-5 border-b border-gray-200">
                       {/* Distance */}
                       <div className="flex items-center gap-2 text-sm">
-                        <span className="text-lg">📍</span>
+                        <span className="text-lg">◐</span>
                         <span className="text-monsoon-600 font-medium">{place.distance}</span>
                       </div>
 
                       {/* Best Time */}
                       <div className="flex items-center gap-2 text-sm">
-                        <span className="text-lg">🕐</span>
+                        <span className="text-lg">◉</span>
                         <span className="text-monsoon-600 font-medium">{place.bestTime}</span>
                       </div>
                     </div>
@@ -305,10 +305,10 @@ const PlacesPage: React.FC = () => {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { icon: '🏛️', label: 'Historic Sites', value: '15+' },
-              { icon: '🌲', label: 'Nature Trails', value: '20+' },
-              { icon: '📚', label: 'Mythological', value: '10+' },
-              { icon: '⭐', label: 'Avg Rating', value: '4.7' },
+              { icon: '▦', label: 'Historic Sites', value: '15+' },
+              { icon: '◆', label: 'Nature Trails', value: '20+' },
+              { icon: '■', label: 'Mythological', value: '10+' },
+              { icon: '★', label: 'Avg Rating', value: '4.7' },
             ].map((stat, idx) => (
               <div key={idx} className="bg-white rounded-lg p-6 text-center shadow-md hover:shadow-lg transition-shadow">
                 <div className="text-4xl mb-3">{stat.icon}</div>

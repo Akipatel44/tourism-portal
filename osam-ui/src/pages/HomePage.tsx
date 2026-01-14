@@ -10,32 +10,32 @@ const HomePage: React.FC = () => {
       id: 1,
       title: 'Ancient Temples',
       description: 'Centuries-old temples with intricate architecture and deep spiritual significance',
-      icon: '🏛️',
-      color: 'from-forest-600 to-forest-800',
+      icon: '▦',
+      color: 'from-amber-600 to-amber-700',
       link: '/places',
     },
     {
       id: 2,
-      title: 'Mythology',
-      description: 'Rich mythological heritage and legends passed down through generations',
-      icon: '📚',
-      color: 'from-accent-gold to-yellow-700',
+      title: 'Mythological Heritage',
+      description: 'Explore rich legends and cultural narratives passed down through generations',
+      icon: '■',
+      color: 'from-purple-600 to-purple-700',
       link: '/mythology',
     },
     {
       id: 3,
-      title: 'Nature & Wildlife',
-      description: 'Breathtaking landscapes, forests, waterfalls, and scenic viewpoints',
-      icon: '🌲',
-      color: 'from-green-600 to-forest-800',
+      title: 'Natural Landscapes',
+      description: 'Experience breathtaking waterfalls, forests, and pristine scenic viewpoints',
+      icon: '◆',
+      color: 'from-emerald-600 to-emerald-700',
       link: '/nature',
     },
     {
       id: 4,
       title: 'Festivals & Events',
-      description: 'Year-round celebrations, festivals, and cultural events',
-      icon: '🎉',
-      color: 'from-accent-mint to-teal-600',
+      description: 'Year-round celebrations, festivals, and cultural experiences',
+      icon: '●',
+      color: 'from-rose-600 to-rose-700',
       link: '/events',
     },
   ];
@@ -84,8 +84,8 @@ const HomePage: React.FC = () => {
         {/* Hero Content */}
         <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
           <div className="mb-6 animate-fade-in">
-            <p className="text-accent-mint text-lg font-semibold tracking-wider uppercase">
-              Welcome to Sacred Heights
+            <p className="text-emerald-300 text-lg font-semibold tracking-wider uppercase">
+              Discover Sacred Beauty
             </p>
           </div>
 
@@ -94,40 +94,30 @@ const HomePage: React.FC = () => {
           </h1>
 
           <p className="text-lg sm:text-xl lg:text-2xl mb-8 text-gray-100 max-w-2xl mx-auto leading-relaxed">
-            Where ancient temples meet pristine nature, mythology comes alive, and every season reveals a new story
+            Where ancient temples meet pristine nature. Discover mythology, adventure, and cultural treasures in the heart of nature.
           </p>
 
           {/* Hero CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/places"
-              className="px-8 py-4 bg-accent-mint text-forest-800 rounded-lg font-bold text-lg hover:bg-white hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+              className="inline-flex items-center justify-center px-8 py-3 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors gap-2"
             >
               Explore Places
             </Link>
             <Link
-              to="/visit-guide"
-              className="px-8 py-4 border-2 border-white text-white rounded-lg font-bold text-lg hover:bg-white hover:text-forest-800 transition-all duration-300"
+              to="/visitor-guide"
+              className="inline-flex items-center justify-center px-8 py-3 bg-white/20 backdrop-blur-sm text-white font-semibold rounded-lg hover:bg-white/30 transition-colors border border-white/30"
             >
               Plan Your Visit
             </Link>
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
-          <svg
-            className="w-6 h-6 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 14l-7 7m0 0l-7-7m7 7V3"
-            />
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 animate-pulse">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
         </div>
       </section>

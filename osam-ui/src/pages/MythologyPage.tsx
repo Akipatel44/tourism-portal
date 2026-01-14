@@ -355,3 +355,4 @@ const MythologyPage: React.FC = () => {
 };
 
 export default MythologyPage;
+
