@@ -36,7 +36,7 @@ python create_db.py
 alembic upgrade head
 
 # Run server
-uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload
 ```
 
 Server runs on `http://localhost:8000`
@@ -171,17 +171,18 @@ You should see tables like: `users`, `places`, `events`, `galleries`, etc.
 ### Development Mode (with auto-reload)
 
 ```bash
-uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload
 ```
 
 - **URL:** http://localhost:8000
 - **Auto-reload:** Code changes restart the server automatically
 - **Host:** 127.0.0.1 (local only)
+- **Note:** Use `python -m uvicorn` instead of bare `uvicorn` to ensure venv packages are used
 
 ### Production Mode
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
 - **Workers:** 4 parallel processes

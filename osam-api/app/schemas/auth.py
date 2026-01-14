@@ -2,6 +2,7 @@
 Authentication schemas for FastAPI validation.
 """
 
+from __future__ import annotations
 from pydantic import BaseModel, Field, EmailStr, validator
 from typing import Optional
 from datetime import datetime
@@ -154,3 +155,7 @@ class ChangePasswordResponse(BaseModel):
                 "message": "Password changed successfully"
             }
         }
+
+
+# Rebuild models to resolve forward references
+TokenResponse.model_rebuild()
