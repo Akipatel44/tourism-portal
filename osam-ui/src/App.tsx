@@ -9,16 +9,21 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NotificationContainer from "./components/NotificationContainer";
 import HomePage from "./pages/HomePage";
 import PlacesPage from "./pages/PlacesPage";
 import PlaceDetailPage from "./pages/PlaceDetailPage";
 import MythologyPage from "./pages/MythologyPage";
 import NaturePage from "./pages/NaturePage";
 import EventsPage from "./pages/EventsPage";
+import EventDetailPage from "./pages/EventDetailPage";
 import TrekkingPage from "./pages/TrekkingPage";
 import VisitorGuidePage from "./pages/VisitorGuidePage";
 import GalleryPage from "./pages/GalleryPage";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AdminPlacesPage from "./pages/AdminPlacesPage";
+import AdminEventsPage from "./pages/AdminEventsPage";
+import AdminGalleryPage from "./pages/AdminGalleryPage";
 import LoginPage from "./pages/LoginPage";
 
 const App: React.FC = () => {
@@ -28,6 +33,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <AuthProvider>
+        <NotificationContainer />
         <Layout logoUrl={SITE_LOGO} siteName={SITE_NAME}>
           <Routes>
             {/* Authentication Routes */}
@@ -41,15 +47,40 @@ const App: React.FC = () => {
             <Route path="/nature" element={<NaturePage />} />
             <Route path="/trekking" element={<TrekkingPage />} />
             <Route path="/events" element={<EventsPage />} />
+            <Route path="/events/:id" element={<EventDetailPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/visitor-guide" element={<VisitorGuidePage />} />
 
-            {/* Protected Admin Route - requires admin role */}
+            {/* Protected Admin Routes - requires admin role */}
             <Route
               path="/admin"
               element={
                 <ProtectedRoute requireAdmin>
-                  <AdminDashboard />
+                  <AdminDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/places"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminPlacesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/events"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminEventsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/gallery"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminGalleryPage />
                 </ProtectedRoute>
               }
             />
