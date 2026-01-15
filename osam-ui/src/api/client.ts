@@ -1,28 +1,60 @@
 /**
- * API Client - Axios Instance Setup
+ * API Client Configuration
  * 
- * Configures base Axios instance with:
- * - Environment-based URLs
- * - Default headers
- * - Token management
- * - Error handling
- * - Request/response interceptors
+ * Modern Axios setup with:
+ * ✓ Environment-based base URL
+ * ✓ Automatic JWT token attachment
+ * ✓ 401 unauthorized handling with auto-logout
+ * ✓ Global error handling & retry logic
+ * ✓ Request/response interceptors
+ * ✓ TypeScript support
  */
 
-import axios, { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  AxiosInstance,
+  AxiosError,
+  InternalAxiosRequestConfig,
+  AxiosResponse,
+  AxiosRequestConfig,
+} from 'axios';
 import { tokenStorage } from './tokenStorage';
 
-// Environment configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-const API_TIMEOUT = import.meta.env.VITE_API_TIMEOUT ? parseInt(import.meta.env.VITE_API_TIMEOUT) : 30000;
+/* ==================== CONFIGURATION ==================== */
 
-console.log('[API Client] Initialized with base URL:', API_BASE_URL);
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT || '30000', 10);
+
+console.log('[API] Base URL:', API_BASE_URL);
+
+/* ==================== TYPES ==================== */
 
 /**
- * Create base Axios instance
- * Used for all API requests
+ * Standardized API error structure
  */
-const createAxiosInstance = (): AxiosInstance => {
+export interface ApiError {
+  status: number;
+  message: string;
+  code?: string;
+  details?: Record<string, any>;
+  originalError?: AxiosError;
+}
+
+/**
+ * Standardized API response structure
+ */
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  message?: string;
+  error?: string;
+}
+
+/* ==================== AXIOS INSTANCE ==================== */
+
+/**
+ * Create and configure Axios instance with interceptors
+ */
+const createApiClient = (): AxiosInstance => {
   const instance = axios.create({
     baseURL: API_BASE_URL,
     timeout: API_TIMEOUT,
@@ -32,13 +64,20 @@ const createAxiosInstance = (): AxiosInstance => {
     },
   });
 
-  // Request interceptor - Add auth token
+  /* ======== REQUEST INTERCEPTOR ======== */
   instance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
+      // Attach JWT token to Authorization header
       const token = tokenStorage.getAccessToken();
-      
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+      }
+
+      // Log requests in development
+      if (import.meta.env.DEV) {
+        console.log(
+          `[API] ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`
+        );
       }
 
       return config;
@@ -46,22 +85,72 @@ const createAxiosInstance = (): AxiosInstance => {
     (error) => Promise.reject(error)
   );
 
-  // Response interceptor - Handle auth errors
+  /* ======== RESPONSE INTERCEPTOR ======== */
   instance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      // 401 Unauthorized - Token expired or invalid
+    (response: AxiosResponse) => response,
+    async (error: AxiosError) => {
+      const config = error.config as InternalAxiosRequestConfig;
+
+      // ===== 401 UNAUTHORIZED - AUTO LOGOUT =====
       if (error.response?.status === 401) {
-        // Clear stored token
+        // Clear authentication
         tokenStorage.clearAccessToken();
-        
-        // Trigger logout event (components listening can redirect to login)
-        window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+
+        // Dispatch logout event for listeners
+        window.dispatchEvent(
+          new CustomEvent('auth:unauthorized', {
+            detail: { message: 'Token expired or invalid' },
+          })
+        );
+
+        // Redirect to login (if not already there)
+        if (!window.location.pathname.includes('/login')) {
+          window.location.href = '/login';
+        }
+
+        return Promise.reject(error);
       }
 
-      // 403 Forbidden - User doesn't have permission
+      // ===== 403 FORBIDDEN - ACCESS DENIED =====
       if (error.response?.status === 403) {
-        console.error('[API] Access denied - insufficient permissions');
+        console.warn(
+          '[API] Access denied - insufficient permissions',
+          error.response.data
+        );
+        return Promise.reject(error);
+      }
+
+      // ===== 5XX SERVER ERRORS - RETRY LOGIC =====
+      if (
+        error.response?.status &&
+        error.response.status >= 500 &&
+        config &&
+        !config.headers['X-Retry-Count']
+      ) {
+        // Retry once for server errors
+        const retryCount = (config.headers['X-Retry-Count'] as number) || 0;
+        if (retryCount < 1) {
+          config.headers['X-Retry-Count'] = String(retryCount + 1);
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              resolve(instance(config));
+            }, 1000); // Wait 1 second before retry
+          });
+        }
+      }
+
+      // ===== NETWORK ERROR =====
+      if (!error.response) {
+        console.error('[API] Network error:', error.message);
+      }
+
+      // ===== LOG ALL ERRORS =====
+      if (import.meta.env.DEV) {
+        console.error(
+          '[API Error]',
+          error.response?.status,
+          error.response?.data || error.message
+        );
       }
 
       return Promise.reject(error);
@@ -71,71 +160,58 @@ const createAxiosInstance = (): AxiosInstance => {
   return instance;
 };
 
-// Export the Axios instance
-export const apiClient = createAxiosInstance();
+// Export configured instance
+export const apiClient = createApiClient();
+
+/* ==================== UTILITIES ==================== */
 
 /**
- * API Error Type
- * Standardized error handling for all API responses
+ * Transform Axios error into standardized ApiError
+ * @param error Axios error or any thrown error
+ * @returns Standardized ApiError object
  */
-export interface ApiError {
-  status: number;
-  message: string;
-  details?: Record<string, any>;
-  originalError?: Error;
-}
-
-/**
- * API Response Type
- * Standard response wrapper from FastAPI
- */
-export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
-}
-
-/**
- * Unified error handler
- * Transforms various error types into standardized ApiError
- */
-export const handleApiError = (error: any): ApiError => {
+export const handleApiError = (error: unknown): ApiError => {
   if (axios.isAxiosError(error)) {
+    const status = error.response?.status || 0;
+    const data = error.response?.data as Record<string, any>;
+
     return {
-      status: error.response?.status || 0,
-      message: error.response?.data?.message || error.message || 'Unknown error',
-      details: error.response?.data?.details,
+      status,
+      code: data?.code || `HTTP_${status}`,
+      message: data?.message || error.message || 'An error occurred',
+      details: data?.details,
       originalError: error,
     };
   }
 
+  // Handle non-Axios errors
+  const err = error as Error;
   return {
     status: 0,
-    message: error?.message || 'Unknown error',
-    originalError: error,
+    code: 'UNKNOWN_ERROR',
+    message: err?.message || 'An unknown error occurred',
+    originalError: err,
   };
 };
 
 /**
- * Unified response handler
- * Extracts data from response with error checking
+ * Extract data from API response with validation
+ * @param response API response object
+ * @returns Extracted data
  */
-export const handleApiResponse = <T>(response: any): T => {
-  // If response has 'data' property (standard Axios response)
-  if (response?.data) {
-    // If it's a FastAPI standard response structure
-    if ('success' in response.data) {
-      if (!response.data.success) {
-        throw new Error(response.data.message || 'API request failed');
-      }
-      return response.data.data || response.data;
+export const extractResponseData = <T = any>(response: any): T => {
+  const data = response?.data;
+
+  // Handle FastAPI standard response
+  if (data && typeof data === 'object' && 'success' in data) {
+    if (!data.success) {
+      throw new Error(data.message || 'API request failed');
     }
-    // Otherwise return the data directly
-    return response.data;
+    return data.data || data;
   }
 
-  return response;
+  // Return data directly
+  return data || response;
 };
 
 export default apiClient;

@@ -97,17 +97,125 @@ export interface ApiErrorResponse {
 
 /**
  * Authentication API Service
+/**
+ * Authentication API Service
+ * 
+ * User authentication endpoints
+ * - POST /auth/login - Authenticate user with credentials
+ * - POST /auth/logout - Clear session
+ * - GET /auth/me - Get current authenticated user
+ * - PUT /auth/profile - Update user profile
+ * - POST /auth/change-password - Change user password
+ * 
+ * Admin endpoints:
+ * - GET /auth/admin - Verify admin access
+ */
+
+import { apiClient, handleApiError } from './client';
+import { tokenStorage } from './tokenStorage';
+import type { AxiosError } from 'axios';
+
+/**
+ * User Interface
+ * Matches FastAPI User model
+ */
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  full_name: string;
+  is_admin: boolean;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+/**
+ * Login Request
+ */
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+/**
+ * Login Response
+ * Contains JWT access token from FastAPI
+ */
+export interface LoginResponse {
+  access_token: string;
+  token_type: string;
+  user?: User;
+}
+
+/**
+ * Register Request
+ */
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+  full_name: string;
+}
+
+/**
+ * Register Response
+ */
+export interface RegisterResponse {
+  id: number;
+  username: string;
+  email: string;
+  full_name: string;
+  message: string;
+}
+
+/**
+ * Update Profile Request
+ */
+export interface UpdateProfileRequest {
+  full_name?: string;
+  email?: string;
+  current_password?: string;
+  new_password?: string;
+}
+
+/**
+ * Update Profile Response
+ */
+export interface UpdateProfileResponse {
+  message: string;
+  user: User;
+}
+
+/**
+ * API Error Response
+ */
+export interface ApiErrorResponse {
+  status: number;
+  message: string;
+  detail?: string;
+  data?: any;
+}
+
+/* ==================== AUTH API SERVICE ==================== */
+
+/**
+ * Authentication API Service
+ * Handles all auth-related API calls
  */
 export const authApi = {
   /**
    * Login user with credentials
-   * Stores token in localStorage via tokenStorage
+   * 
+   * @param credentials Username and password
+   * @returns Access token and user info
+   * @throws ApiErrorResponse on failure
    */
   login: async (
     credentials: LoginRequest
   ): Promise<{ token: string; user: User }> => {
     try {
-      // FastAPI uses form data for OAuth2 login
+      // FastAPI OAuth2 expects form-encoded credentials
       const formData = new URLSearchParams();
       formData.append('username', credentials.username);
       formData.append('password', credentials.password);
@@ -124,10 +232,10 @@ export const authApi = {
 
       const { access_token, user } = response.data;
 
-      // Store token
+      // Store token in localStorage
       tokenStorage.setAccessToken(access_token);
 
-      console.log('[AuthApi] User logged in successfully');
+      console.log('[AuthApi] User logged in:', credentials.username);
 
       return {
         token: access_token,
@@ -141,104 +249,92 @@ export const authApi = {
         },
       };
     } catch (error) {
-      const apiError = error as AxiosError;
-      const errorMessage =
-        (apiError.response?.data as any)?.detail ||
-        apiError.message ||
-        'Login failed';
+      const apiError = handleApiError(error);
+      const errorMessage = apiError.message || 'Login failed';
 
       console.error('[AuthApi] Login failed:', errorMessage);
 
       throw {
-        status: apiError.response?.status || 401,
+        status: apiError.status,
         message: errorMessage,
-        data: apiError.response?.data,
-      };
+        detail: apiError.details,
+      } as ApiErrorResponse;
     }
   },
 
   /**
-   * Register new user account
-   */
-  register: async (
-    data: RegisterRequest
-  ): Promise<RegisterResponse> => {
-    try {
-      const response = await apiClient.post<RegisterResponse>(
-        '/auth/register',
-        data
-      );
-
-      console.log('[AuthApi] User registered successfully');
-
-      return response.data;
-    } catch (error) {
-      const apiError = error as AxiosError;
-      const errorMessage =
-        (apiError.response?.data as any)?.detail ||
-        apiError.message ||
-        'Registration failed';
-
-      console.error('[AuthApi] Registration failed:', errorMessage);
-
-      throw {
-        status: apiError.response?.status || 400,
-        message: errorMessage,
-        data: apiError.response?.data,
-      };
-    }
-  },
-
-  /**
-   * Logout user and clear token
-   */
-  logout: async (): Promise<void> => {
-    try {
-      // Clear token from storage first
-      tokenStorage.clearAll();
-
-      // Call logout endpoint (might not exist, but try anyway)
-      try {
-        await apiClient.post('/auth/logout');
-      } catch {
-        // Logout endpoint might not exist - that's ok
-        // Token is already cleared from storage
-      }
-
-      console.log('[AuthApi] User logged out successfully');
-    } catch (error) {
-      console.error('[AuthApi] Logout error:', error);
-      // Clear token anyway on logout
-      tokenStorage.clearAll();
-      throw error;
-    }
-  },
-
-  /**
-   * Get current authenticated user info
-   * Uses token from Authorization header
+   * Get currently authenticated user
+   * 
+   * @returns Current user object
+   * @throws ApiErrorResponse on failure
    */
   getCurrentUser: async (): Promise<User> => {
     try {
       const response = await apiClient.get<User>('/auth/me');
       return response.data;
     } catch (error) {
-      const apiError = error as AxiosError;
+      const apiError = handleApiError(error);
 
-      // If 401, clear token
-      if (apiError.response?.status === 401) {
+      // Clear token on 401
+      if (apiError.status === 401) {
         tokenStorage.clearAll();
       }
 
+      console.error('[AuthApi] Failed to get current user:', apiError.message);
+
       throw {
-        status: apiError.response?.status || 401,
+        status: apiError.status,
         message: apiError.message || 'Failed to get user info',
-      };
+      } as ApiErrorResponse;
+    }
+  },
+
+  /**
+   * Logout user and clear authentication
+   * 
+   * @returns Promise<void>
+   */
+  logout: async (): Promise<void> => {
+    try {
+      // Clear token first
+      tokenStorage.clearAll();
+
+      // Try to notify backend (endpoint may not exist)
+      try {
+        await apiClient.post('/auth/logout');
+      } catch {
+        // Silent fail - logout endpoint may not be implemented
+      }
+
+      console.log('[AuthApi] User logged out');
+    } catch (error) {
+      // Always clear token on logout attempt
+      tokenStorage.clearAll();
+      console.error('[AuthApi] Logout error (token cleared anyway):', error);
+    }
+  },
+
+  /**
+   * Verify current user is admin
+   * 
+   * @returns True if user is admin
+   */
+  isAdmin: async (): Promise<boolean> => {
+    try {
+      const user = await authApi.getCurrentUser();
+      return user.is_admin || false;
+    } catch {
+      console.warn('[AuthApi] Could not verify admin status');
+      return false;
     }
   },
 
   /**
    * Update user profile
+   * 
+   * @param data Profile update fields
+   * @returns Updated user info and message
+   * @throws ApiErrorResponse on failure
    */
   updateProfile: async (
     data: UpdateProfileRequest
@@ -253,39 +349,26 @@ export const authApi = {
 
       return response.data;
     } catch (error) {
-      const apiError = error as AxiosError;
-      const errorMessage =
-        (apiError.response?.data as any)?.detail ||
-        apiError.message ||
-        'Profile update failed';
+      const apiError = handleApiError(error);
+      const errorMessage = apiError.message || 'Profile update failed';
 
       console.error('[AuthApi] Profile update failed:', errorMessage);
 
       throw {
-        status: apiError.response?.status || 400,
+        status: apiError.status,
         message: errorMessage,
-        data: apiError.response?.data,
-      };
+        detail: apiError.details,
+      } as ApiErrorResponse;
     }
   },
 
   /**
-   * Verify current token is valid
-   * Quick check without additional API call
-   */
-  verifyToken: (): boolean => {
-    try {
-      // Use client's axios instance to check if token is valid
-      // The interceptor will handle Authorization header
-      const token = tokenStorage.getAccessToken();
-      return !!token;
-    } catch {
-      return false;
-    }
-  },
-
-  /**
-   * Change password
+   * Change user password
+   * 
+   * @param currentPassword Current password for verification
+   * @param newPassword New password
+   * @returns Success message
+   * @throws ApiErrorResponse on failure
    */
   changePassword: async (
     currentPassword: string,
@@ -304,38 +387,62 @@ export const authApi = {
 
       return response.data;
     } catch (error) {
-      const apiError = error as AxiosError;
-      const errorMessage =
-        (apiError.response?.data as any)?.detail ||
-        apiError.message ||
-        'Password change failed';
+      const apiError = handleApiError(error);
+      const errorMessage = apiError.message || 'Password change failed';
 
       console.error('[AuthApi] Password change failed:', errorMessage);
 
       throw {
-        status: apiError.response?.status || 400,
+        status: apiError.status,
         message: errorMessage,
-        data: apiError.response?.data,
-      };
+        detail: apiError.details,
+      } as ApiErrorResponse;
     }
   },
 
   /**
-   * Check if user has admin role
+   * Register new user account
+   * 
+   * @param data User registration info
+   * @returns New user info and message
+   * @throws ApiErrorResponse on failure
    */
-  isAdmin: async (): Promise<boolean> => {
+  register: async (
+    data: RegisterRequest
+  ): Promise<RegisterResponse> => {
     try {
-      const user = await authApi.getCurrentUser();
-      return user.is_admin || false;
-    } catch {
-      return false;
+      const response = await apiClient.post<RegisterResponse>(
+        '/auth/register',
+        data
+      );
+
+      console.log('[AuthApi] User registered successfully');
+
+      return response.data;
+    } catch (error) {
+      const apiError = handleApiError(error);
+      const errorMessage = apiError.message || 'Registration failed';
+
+      console.error('[AuthApi] Registration failed:', errorMessage);
+
+      throw {
+        status: apiError.status,
+        message: errorMessage,
+        detail: apiError.details,
+      } as ApiErrorResponse;
     }
   },
 
   /**
-   * Request password reset (if implemented)
+   * Request password reset
+   * 
+   * @param email User email address
+   * @returns Success message
+   * @throws ApiErrorResponse on failure
    */
-  requestPasswordReset: async (email: string): Promise<{ message: string }> => {
+  requestPasswordReset: async (
+    email: string
+  ): Promise<{ message: string }> => {
     try {
       const response = await apiClient.post<{ message: string }>(
         '/auth/forgot-password',
@@ -344,48 +451,25 @@ export const authApi = {
 
       return response.data;
     } catch (error) {
-      const apiError = error as AxiosError;
-      const errorMessage =
-        (apiError.response?.data as any)?.detail ||
-        apiError.message ||
-        'Password reset request failed';
+      const apiError = handleApiError(error);
+
+      console.error('[AuthApi] Password reset request failed:', apiError.message);
 
       throw {
-        status: apiError.response?.status || 400,
-        message: errorMessage,
-      };
+        status: apiError.status,
+        message: apiError.message || 'Password reset request failed',
+        detail: apiError.details,
+      } as ApiErrorResponse;
     }
   },
-};
 
-/**
- * Global authentication event dispatcher
- * Allows components to react to auth changes without context
- */
-export const createAuthEvent = (type: string, data?: any) => {
-  const event = new CustomEvent(`auth:${type}`, {
-    detail: data,
-  });
-  window.dispatchEvent(event);
-};
-
-/**
- * Listen to authentication events
- * Usage: listenToAuthEvent('login', (data) => console.log(data))
- */
-export const listenToAuthEvent = (
-  type: string,
-  callback: (data?: any) => void
-) => {
-  const handler = (event: Event) => {
-    const customEvent = event as CustomEvent;
-    callback(customEvent.detail);
-  };
-
-  window.addEventListener(`auth:${type}`, handler);
-
-  // Return unsubscribe function
-  return () => {
-    window.removeEventListener(`auth:${type}`, handler);
-  };
+  /**
+   * Verify token is valid
+   * Quick local check without API call
+   * 
+   * @returns True if token exists
+   */
+  hasValidToken: (): boolean => {
+    return tokenStorage.hasAccessToken();
+  },
 };
