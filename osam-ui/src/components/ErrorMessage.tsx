@@ -14,7 +14,7 @@ interface ErrorMessageProps {
   variant?: 'banner' | 'card' | 'inline' | 'toast';
 }
 
-const ErrorMessage: React.FC<ErrorMessageProps> = ({
+export const ErrorMessage: React.FC<ErrorMessageProps> = ({
   title,
   message,
   actionLabel,
@@ -115,6 +115,4 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
 
   return null;
 };
-
-export default ErrorMessage;
 

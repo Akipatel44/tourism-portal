@@ -12,7 +12,7 @@ interface LoaderProps {
   variant?: 'spinner' | 'dots' | 'bars';
 }
 
-const Loader: React.FC<LoaderProps> = ({
+export const Loader: React.FC<LoaderProps> = ({
   size = 'md',
   fullScreen = false,
   message = 'Loading...',
@@ -74,5 +74,3 @@ const Loader: React.FC<LoaderProps> = ({
 
   return <div className="flex items-center justify-center py-8">{content}</div>;
 };
-
-export default Loader;
