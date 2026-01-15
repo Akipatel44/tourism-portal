@@ -4,13 +4,13 @@
  */
 
 export const NAVIGATION_LINKS = [
-  { label: "Home", href: "/", icon: "🏠" },
-  { label: "Places", href: "/places", icon: "📍" },
-  { label: "Mythology", href: "/mythology", icon: "📚" },
-  { label: "Nature", href: "/nature", icon: "🌿" },
-  { label: "Events", href: "/events", icon: "🎉" },
-  { label: "Gallery", href: "/gallery", icon: "🖼️" },
-  { label: "Visit Guide", href: "/visit-guide", icon: "🗺️" },
+  { label: "Home", href: "/", icon: "" },
+  { label: "Places", href: "/places", icon: "" },
+  { label: "Mythology", href: "/mythology", icon: "" },
+  { label: "Nature", href: "/nature", icon: "" },
+  { label: "Events", href: "/events", icon: "" },
+  { label: "Gallery", href: "/gallery", icon: "" },
+  { label: "Visit Guide", href: "/visit-guide", icon: "" },
 ];
 
 export const FOOTER_SECTIONS = {
@@ -47,7 +47,7 @@ export const FOOTER_SECTIONS = {
 
 export const SOCIAL_LINKS = [
   { platform: "Facebook", url: "https://facebook.com/osamhill", icon: "f" },
-  { platform: "Instagram", url: "https://instagram.com/osamhill", icon: "📷" },
-  { platform: "Twitter", url: "https://twitter.com/osamhill", icon: "𝕏" },
-  { platform: "YouTube", url: "https://youtube.com/@osamhill", icon: "▶️" },
+  { platform: "Instagram", url: "https://instagram.com/osamhill", icon: "in" },
+  { platform: "Twitter", url: "https://twitter.com/osamhill", icon: "x" },
+  { platform: "YouTube", url: "https://youtube.com/@osamhill", icon: "yt" },
 ];

@@ -56,6 +56,7 @@ const App: React.FC = () => {
             <Route path="/events/:id" element={<EventDetailPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/visitor-guide" element={<VisitorGuidePage />} />
+            <Route path="/visit-guide" element={<VisitorGuidePage />} />
 
             {/* Protected Admin Routes - requires admin role */}
             <Route

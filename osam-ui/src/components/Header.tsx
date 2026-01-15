@@ -8,12 +8,33 @@ import { NAVIGATION_LINKS } from "../constants/navigation";
 import { HamburgerMenu } from "./HamburgerMenu";
 
 interface HeaderProps {
-  logoUrl?: string;
   siteName?: string;
 }
 
+const Logo = () => (
+  <svg
+    viewBox="0 0 200 200"
+    xmlns="http://www.w3.org/2000/svg"
+    className="w-full h-full"
+  >
+    <rect width="200" height="200" fill="#E8F0E8" />
+    <circle cx="100" cy="100" r="95" fill="none" stroke="#2D5016" strokeWidth="3" />
+    <rect x="70" y="130" width="60" height="35" fill="#2D5016" />
+    <polygon points="75,130 125,130 120,100 80,100" fill="#3d7024" />
+    <polygon points="85,100 115,100 100,70" fill="#2D5016" />
+    <line x1="100" y1="70" x2="100" y2="60" stroke="#8B7355" strokeWidth="2" />
+    <rect x="88" y="110" width="8" height="8" fill="#E8F0E8" stroke="#1a3a0d" strokeWidth="1" />
+    <rect x="104" y="110" width="8" height="8" fill="#E8F0E8" stroke="#1a3a0d" strokeWidth="1" />
+    <rect x="94" y="135" width="12" height="20" fill="#1a3a0d" />
+    <circle cx="103" cy="143" r="1.5" fill="#FFD700" />
+    <ellipse cx="55" cy="95" rx="10" ry="15" fill="#558B2F" transform="rotate(-40 55 95)" />
+    <line x1="55" y1="80" x2="55" y2="110" stroke="#2D5016" strokeWidth="1" />
+    <ellipse cx="145" cy="95" rx="10" ry="15" fill="#558B2F" transform="rotate(40 145 95)" />
+    <line x1="145" y1="80" x2="145" y2="110" stroke="#2D5016" strokeWidth="1" />
+  </svg>
+);
+
 export const Header: React.FC<HeaderProps> = ({
-  logoUrl = "/logo.svg",
   siteName = "Osam Hill & Chichod",
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -28,11 +49,9 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo & Site Name */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            <img
-              src={logoUrl}
-              alt={siteName}
-              className="h-12 w-12 md:h-14 md:w-14 rounded-lg object-cover"
-            />
+            <div className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 bg-forest-50 rounded-lg p-1 flex items-center justify-center">
+              <Logo />
+            </div>
             <div className="hidden sm:block">
               <h1 className="text-lg md:text-xl font-bold text-forest-800">
                 {siteName}
