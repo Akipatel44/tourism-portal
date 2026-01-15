@@ -13,7 +13,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  logoUrl = "https://via.placeholder.com/50x50?text=OSAM",
+  logoUrl = "/logo.svg",
   siteName = "Osam Hill & Chichod",
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
