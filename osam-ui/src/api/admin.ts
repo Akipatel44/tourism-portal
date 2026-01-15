@@ -1,9 +1,11 @@
 /**
  * Admin API Service
  * Handles CRUD operations for places, events, and galleries
+ * Includes automatic loading state management and error handling
  */
 
 import client from './client';
+import { parseApiError } from '@/utils/errorHandler';
 
 // Types for Admin Operations
 export interface PlaceFormData {

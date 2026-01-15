@@ -7,9 +7,12 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { LoadingProvider } from "./contexts/LoadingContext";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotificationContainer from "./components/NotificationContainer";
+import GlobalLoader from "./components/GlobalLoader";
 import HomePage from "./pages/HomePage";
 import PlacesPage from "./pages/PlacesPage";
 import PlaceDetailPage from "./pages/PlaceDetailPage";
@@ -31,10 +34,13 @@ const App: React.FC = () => {
   const SITE_NAME = "Osam Hill & Chichod";
 
   return (
-    <Router>
-      <AuthProvider>
-        <NotificationContainer />
-        <Layout logoUrl={SITE_LOGO} siteName={SITE_NAME}>
+    <ErrorBoundary>
+      <Router>
+        <AuthProvider>
+          <LoadingProvider>
+            <NotificationContainer />
+            <GlobalLoader />
+            <Layout logoUrl={SITE_LOGO} siteName={SITE_NAME}>
           <Routes>
             {/* Authentication Routes */}
             <Route path="/login" element={<LoginPage />} />
@@ -131,9 +137,11 @@ const App: React.FC = () => {
               }
             />
           </Routes>
-        </Layout>
-      </AuthProvider>
-    </Router>
+            </Layout>
+          </LoadingProvider>
+        </AuthProvider>
+      </Router>
+    </ErrorBoundary>
   );
 };
 

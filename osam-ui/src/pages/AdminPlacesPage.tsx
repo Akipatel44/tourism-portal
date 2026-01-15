@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import adminApi, { Place, PlaceFormData } from '@/api/admin';
 import { useNotification } from '@/components/NotificationContainer';
+import { useLoading } from '@/contexts/LoadingContext';
 import { validatePlaceForm, getFieldError, hasFieldError } from '@/utils/validation';
+import { parseApiError } from '@/utils/errorHandler';
+import { useRetry } from '@/hooks/useRetry';
 
 interface PlaceForm extends PlaceFormData {
   [key: string]: any;
@@ -9,8 +12,9 @@ interface PlaceForm extends PlaceFormData {
 
 const AdminPlacesPage: React.FC = () => {
   const notify = useNotification();
+  const { startLoading, stopLoading } = useLoading();
+  const { state: retryState, retry } = useRetry({ maxAttempts: 3 });
   const [places, setPlaces] = useState<Place[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState<PlaceForm>({
@@ -30,14 +34,15 @@ const AdminPlacesPage: React.FC = () => {
   }, []);
 
   const fetchPlaces = async () => {
-    setIsLoading(true);
+    startLoading('Loading places...');
     try {
       const data = await adminApi.getAllPlaces(0, 100);
       setPlaces(data);
+      stopLoading();
     } catch (error: any) {
-      notify.error('Failed to Load Places', error.message);
-    } finally {
-      setIsLoading(false);
+      stopLoading();
+      const parsedError = parseApiError(error);
+      notify.error('Failed to Load Places', parsedError.message);
     }
   };
 
@@ -67,7 +72,7 @@ const AdminPlacesPage: React.FC = () => {
       return;
     }
 
-    setIsLoading(true);
+    startLoading(editingId ? 'Updating place...' : 'Creating place...');
     try {
       if (editingId) {
         await adminApi.updatePlace(editingId, formData);
@@ -77,11 +82,12 @@ const AdminPlacesPage: React.FC = () => {
         notify.success('Place Created Successfully');
       }
       resetForm();
+      stopLoading();
       fetchPlaces();
     } catch (error: any) {
-      notify.error('Operation Failed', error.message);
-    } finally {
-      setIsLoading(false);
+      stopLoading();
+      const parsedError = parseApiError(error);
+      notify.error('Operation Failed', parsedError.message);
     }
   };
 
@@ -107,16 +113,17 @@ const AdminPlacesPage: React.FC = () => {
   };
 
   const handleDelete = async (id: number) => {
-    setIsLoading(true);
+    startLoading('Deleting place...');
     try {
       await adminApi.deletePlace(id);
       notify.success('Place Deleted Successfully');
       setDeleteConfirm(null);
+      stopLoading();
       fetchPlaces();
     } catch (error: any) {
-      notify.error('Delete Failed', error.message);
-    } finally {
-      setIsLoading(false);
+      stopLoading();
+      const parsedError = parseApiError(error);
+      notify.error('Delete Failed', parsedError.message);
     }
   };
 
@@ -399,11 +406,7 @@ const AdminPlacesPage: React.FC = () => {
       )}
 
       {/* Places List */}
-      {isLoading && !isFormOpen ? (
-        <div className="text-center py-8">
-          <p className="text-gray-500">Loading places...</p>
-        </div>
-      ) : places.length === 0 ? (
+      {places.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <p className="text-gray-500">No places found. Create one to get started!</p>
         </div>

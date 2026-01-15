@@ -18,13 +18,21 @@ import axios, {
   AxiosRequestConfig,
 } from 'axios';
 import { tokenStorage } from './tokenStorage';
+import { env } from '@/config/environment';
 
 /* ==================== CONFIGURATION ==================== */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-const API_TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT || '30000', 10);
+const API_BASE_URL = env.api.baseUrl;
+const API_TIMEOUT = env.api.timeout;
 
-console.log('[API] Base URL:', API_BASE_URL);
+if (env.isDev || env.debug.enabled) {
+  console.log('[API] Configuration:', {
+    baseUrl: API_BASE_URL,
+    timeout: API_TIMEOUT,
+    environment: env.appEnv,
+    apiLogging: env.features.apiLogging,
+  });
+}
 
 /* ==================== TYPES ==================== */
 
@@ -73,8 +81,8 @@ const createApiClient = (): AxiosInstance => {
         config.headers.Authorization = `Bearer ${token}`;
       }
 
-      // Log requests in development
-      if (import.meta.env.DEV) {
+      // Log requests based on environment configuration
+      if (env.features.apiLogging || env.isDev) {
         console.log(
           `[API] ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`
         );
@@ -82,7 +90,7 @@ const createApiClient = (): AxiosInstance => {
 
       return config;
     },
-    (error) => Promise.reject(error)
+    (error: AxiosError) => Promise.reject(error)
   );
 
   /* ======== RESPONSE INTERCEPTOR ======== */
