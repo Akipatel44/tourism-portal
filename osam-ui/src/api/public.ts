@@ -1,17 +1,25 @@
 /**
- * Public API Service
+ * Public API Service - Unauthenticated Endpoints
  * 
- * Endpoints that don't require authentication
- * - GET /places - Fetch all places
- * - GET /places/:id - Fetch single place
- * - GET /events - Fetch all events
- * - GET /events/:id - Fetch single event
- * - GET /galleries - Fetch all galleries
- * - GET /galleries/:id - Fetch single gallery
- */
-
-import { apiClient } from './client';
-import type { AxiosError } from 'axios';
+ * These endpoints are accessible to anyone without login.
+ * Token is NOT sent by default (but can be sent if authenticated).
+ * 
+ * Endpoints (12 total):
+ * - GET /places - List all places with pagination
+ * - GET /places/:id - Single place details
+ * - GET /events - List all events with pagination
+ * - GET /events/:id - Single event details
+ * - GET /galleries - List all galleries
+ * - GET /galleries/:id - Single gallery with images
+ * 
+ * For New Developers:
+ * - Import placesApi, eventsApi, galleriesApi from '@/api'
+ * - All methods are async - use await or .then()
+ * - Errors are automatically caught and typed as ApiError
+ * - All responses are fully typed with TypeScript
+ * 
+ * Example:
+ * ```typescript\n * import { placesApi } from '@/api';\n * const places = await placesApi.getPlaces({ skip: 0, limit: 10 });\n * ```\n */\n\nimport { apiClient } from './client';\nimport type { AxiosError } from 'axios';
 
 /**
  * Place Interface

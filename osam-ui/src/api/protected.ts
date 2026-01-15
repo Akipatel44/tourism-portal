@@ -1,11 +1,21 @@
 /**
- * Protected API Service
+ * Protected API Service - Authenticated Admin Endpoints
  * 
- * Endpoints that require authentication
- * Admin operations for CRUD management
- * - POST/PUT/DELETE /admin/* endpoints
- * - Requires valid JWT token in Authorization header
- * - Token automatically injected via axios interceptor
+ * These endpoints require a valid JWT token in Authorization header.
+ * Token is automatically injected by request interceptor.
+ * Only admin users can call these endpoints (backend validates role).
+ * 
+ * Operations (15 total):
+ * - POST/PUT/DELETE for places, events, galleries
+ * - POST for uploading images to galleries
+ * 
+ * For New Developers:
+ * - Import protectedPlacesApi, protectedEventsApi, protectedGalleriesApi
+ * - Always call these in try-catch blocks
+ * - Handle errors with parseApiError(error)
+ * - Token must be stored (automatically managed by tokenStorage)
+ * - Backend will reject with 401 if token is invalid
+ * - Backend will reject with 403 if user is not admin
  */
 
 import { apiClient } from './client';

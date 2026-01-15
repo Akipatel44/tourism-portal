@@ -1,13 +1,40 @@
 /**
- * API Client Configuration
+ * API Client Configuration & HTTP Request Layer
  * 
- * Modern Axios setup with:
- * ✓ Environment-based base URL
- * ✓ Automatic JWT token attachment
- * ✓ 401 unauthorized handling with auto-logout
- * ✓ Global error handling & retry logic
- * ✓ Request/response interceptors
- * ✓ TypeScript support
+ * CRITICAL: This is the SINGLE HTTP client instance used by the entire application.
+ * All API requests flow through this one axios instance with shared interceptors.
+ * 
+ * Architecture:
+ * ✓ Single Axios instance (singleton pattern)
+ * ✓ Environment-based base URL (dev/staging/prod)
+ * ✓ Automatic JWT token injection on every request
+ * ✓ 401 unauthorized handling with auto-logout signal
+ * ✓ Global error handling and standardization
+ * ✓ Request/response logging (controllable via env var)
+ * ✓ Full TypeScript type safety
+ * 
+ * For New Developers:
+ * 1. NEVER create additional axios instances
+ * 2. ALWAYS use: import { apiClient } from '@/api'
+ * 3. NEVER manually set Authorization headers
+ * 4. Token management is AUTOMATIC via request interceptor
+ * 5. All errors are caught and standardized as ApiError interface
+ * 6. Logging can be enabled/disabled via VITE_FEATURE_API_LOGGING
+ * 
+ * Usage Examples:
+ * ```typescript
+ * // Public endpoint
+ * const places = await apiClient.get('/places');
+ * 
+ * // Protected endpoint (token auto-injected)
+ * const newPlace = await apiClient.post('/admin/places', {...});
+ * 
+ * // Always returns Promise with typed response or throws ApiError
+ * ```
+ * 
+ * Data Flow:
+ * Request → Request Interceptor (add token) → HTTP → Response Interceptor
+ * (handle errors) → Promise resolved or rejected
  */
 
 import axios, {
