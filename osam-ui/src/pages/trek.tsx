@@ -24,7 +24,7 @@ const SAFETY_TIPS: SafetyTipProps[] = [
   {
     icon: '⛑️',
     title: 'Protective Gear',
-    description: 'Bring a helmet if you're comfortable wearing one. Sun protection (hat, sunscreen) is essential.',
+    description: "Bring a helmet if you're comfortable wearing one. Sun protection (hat, sunscreen) is essential.",
   },
   {
     icon: '🧭',

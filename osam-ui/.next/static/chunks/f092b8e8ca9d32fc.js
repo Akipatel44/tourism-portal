@@ -1,5 +1,0 @@
-__turbopack_load_page_chunks__("/trek", [
-  "static/chunks/05e30ffdaaad186b.js",
-  "static/chunks/2d0eb7e4dc383186.js",
-  "static/chunks/turbopack-3fc3997935e04adb.js"
-])

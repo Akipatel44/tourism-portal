@@ -79,7 +79,7 @@ const DOS_AND_DONTS: DoAndDontItem[] = [
   { category: 'dont', text: 'Point feet at religious statues or people' },
   { category: 'dont', text: 'Touch people on the head—considered disrespectful' },
   { category: 'dont', text: 'Sit on temple steps or sacred spaces carelessly' },
-  { category: 'dont', text: 'Refuse food or drink offered by locals—it's an honor' },
+  { category: 'dont', text: "Refuse food or drink offered by locals—it's an honor" },
   { category: 'dont', text: 'Litter or disturb wildlife' },
   { category: 'dont', text: 'Assume all Indians speak English—some villagers may not' },
   { category: 'dont', text: 'Share food with your left hand' },
