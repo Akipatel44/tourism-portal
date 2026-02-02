@@ -36,7 +36,7 @@ export default function AdminPlacesPage() {
     setError(null);
     try {
       const resp = await PlacesService.getPlaces({ page, page_size: ITEMS_PER_PAGE });
-      setPlaces(resp.results);
+      setPlaces(resp.items || []);
       setTotalPages(resp.total_pages || 1);
     } catch (err: any) {
       setError(err?.message || 'Failed to load places');

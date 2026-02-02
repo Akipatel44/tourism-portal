@@ -13,6 +13,7 @@ import GalleryModal from '@/components/GalleryModal';
 export default function GalleryDetailPage() {
   const router = useRouter();
   const params = useParams();
+  if (!params || !params.id) return null;
   const id = params.id as string;
 
   const { item, isLoading, error, refetch } = useGalleryItem({ id });

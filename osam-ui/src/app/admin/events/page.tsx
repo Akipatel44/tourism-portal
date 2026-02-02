@@ -28,7 +28,7 @@ export default function AdminEventsPage() {
     setError(null);
     try {
       const resp = await EventsService.getEvents({ page:1, page_size:50 });
-      setEvents(resp.results);
+      setEvents(resp.items || []);
     } catch (err:any) {
       setError(err?.message || 'Failed to load events');
     } finally {

@@ -120,5 +120,5 @@ export const PROTECTED_ENDPOINTS = {
  */
 export function isProtectedEndpoint(endpoint: string): boolean {
   const allProtected = Object.values(PROTECTED_ENDPOINTS).flat();
-  return allProtected.some((p) => endpoint.includes(p));
+  return allProtected.some((p) => typeof p === 'string' && endpoint.includes(p));
 }
