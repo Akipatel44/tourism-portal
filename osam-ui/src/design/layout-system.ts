@@ -370,7 +370,7 @@ export const LayoutPatterns = {
       └────────────────────────────────┘
     `,
     minHeight: "100vh for body to push footer down",
-    structure: "4 columns on desktop, 2 columns mobile",
+    columns: "4 columns on desktop, 2 columns mobile",
     padding: "48px desktop, 32px mobile",
   },
 };
