@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import PlaceCard, { PlaceCardProps } from '../components/PlaceCard';
+import { Loader } from '../components/Loader';
+import { EmptyState } from '../components/EmptyState';
 
 // Dummy data
 const PLACES: PlaceCardProps[] = [
@@ -80,6 +82,7 @@ type FilterCategory = 'All' | 'Temple' | 'Mythology' | 'Nature';
 
 export default function PlacesPage() {
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('All');
+  const [isLoading, setIsLoading] = useState(false);
 
   const filteredPlaces = activeFilter === 'All' ? PLACES : PLACES.filter((p) => p.category === activeFilter);
 
@@ -88,13 +91,14 @@ export default function PlacesPage() {
   return (
     <Layout pageTitle="Places to Visit">
       {/* Filters */}
-      <div className="mb-8">
-        <div className="flex flex-wrap gap-2">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           {filterButtons.map((filter) => (
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              aria-pressed={activeFilter === filter}
+              className={`px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                 activeFilter === filter
                   ? 'bg-forest-600 text-white shadow-md'
                   : 'bg-white border border-stone-200 text-monsoon-700 hover:border-forest-600'
@@ -108,23 +112,33 @@ export default function PlacesPage() {
 
       {/* Results count */}
       <div className="mb-6">
-        <p className="text-sm text-stone-600">
+        <p className="text-xs sm:text-sm text-stone-600">
           Showing <span className="font-semibold">{filteredPlaces.length}</span> of <span className="font-semibold">{PLACES.length}</span> places
         </p>
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-max">
-        {filteredPlaces.map((place) => (
-          <PlaceCard key={place.id} {...place} />
-        ))}
-      </div>
-
-      {/* Empty state */}
-      {filteredPlaces.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-stone-600">No places found for the selected filter.</p>
+      {isLoading ? (
+        <Loader variant="skeleton" count={6} />
+      ) : filteredPlaces.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          {filteredPlaces.map((place) => (
+            <PlaceCard key={place.id} {...place} />
+          ))}
         </div>
+      ) : (
+        <EmptyState
+          variant="no-results"
+          title="No places found"
+          description="Try selecting a different category to explore other places."
+          actions={[
+            {
+              label: 'View All Places',
+              onClick: () => setActiveFilter('All'),
+              variant: 'primary',
+            },
+          ]}
+        />
       )}
     </Layout>
   );
