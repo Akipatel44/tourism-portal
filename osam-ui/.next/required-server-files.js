@@ -206,7 +206,6 @@ self.__SERVER_FILES_MANIFEST={
       "turbopackFileSystemCacheForDev": true,
       "turbopackFileSystemCacheForBuild": false,
       "turbopackInferModuleSideEffects": false,
-      "appDir": true,
       "optimizePackageImports": [
         "lucide-react",
         "date-fns",
