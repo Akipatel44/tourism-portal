@@ -6,9 +6,6 @@
  * as a legacy copy for reference.
  */
 module.exports = {
-  experimental: {
-    appDir: true,
-  },
   // Prevent default Pages Router discovery of `.tsx` files in `src/pages`
   pageExtensions: ['page.server.tsx'],
 };
