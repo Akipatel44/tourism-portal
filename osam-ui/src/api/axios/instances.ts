@@ -11,6 +11,8 @@ import axios, {
 } from 'axios';
 import config from '../config';
 import tokenManager from '../utils/tokenManager';
+import GlobalUIController from '@/contexts/GlobalUIController';
+import { getErrorMessage, isRetryableError } from '../utils/apiErrorHandler';
 
 /**
  * Common axios configuration for both public and protected instances
@@ -39,10 +41,38 @@ export const publicApi: AxiosInstance = axios.create(commonConfig);
  * Handles status codes without token injection
  */
 publicApi.interceptors.response.use(
-  (response) => response,
-  (error) => {
+  (response) => {
+    // decrement loading for successful responses
+    try { GlobalUIController.decrementLoading(); } catch {}
+    return response;
+  },
+  async (error) => {
+    try { GlobalUIController.decrementLoading(); } catch {}
+
+    // Notify global UI
+    try {
+      const message = getErrorMessage(error as any);
+      GlobalUIController.notifyError({ message, code: (error as any).response?.status, raw: (error as any).response?.data });
+    } catch {}
+
+    // Retry logic for retryable errors
+    try {
+      const cfg = (error.config as any) || {};
+      cfg.__retryCount = cfg.__retryCount || 0;
+      const MAX_RETRIES = cfg.__maxRetries ?? 2;
+
+      if (isRetryableError(error as any) && cfg.__retryCount < MAX_RETRIES) {
+        cfg.__retryCount += 1;
+        const delay = Math.pow(2, cfg.__retryCount) * 250; // exponential backoff
+        await new Promise((r) => setTimeout(r, delay));
+        return publicApi.request(cfg);
+      }
+    } catch (retryErr) {
+      // ignore retry errors
+    }
+
     if (process.env.NODE_ENV === 'development') {
-      console.error('[Public API Error]', error.response?.data || error.message);
+      console.error('[Public API Error]', (error as any).response?.data || (error as any).message);
     }
     return Promise.reject(error);
   }
@@ -66,13 +96,19 @@ protectedApi.interceptors.request.use(
   (config) => {
     const token = tokenManager.getToken();
 
+    // increment global loading
+    try { GlobalUIController.incrementLoading(); } catch {}
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    try { GlobalUIController.decrementLoading(); } catch {}
+    return Promise.reject(error);
+  }
 );
 
 /**
@@ -81,8 +117,13 @@ protectedApi.interceptors.request.use(
  * Strategy: Clear token and redirect to login (handled by AuthContext)
  */
 protectedApi.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError) => {
+  (response) => {
+    try { GlobalUIController.decrementLoading(); } catch {}
+    return response;
+  },
+  async (error: AxiosError) => {
+    try { GlobalUIController.decrementLoading(); } catch {}
+
     // On 401, clear token - AuthContext will redirect to login
     if (error.response?.status === 401) {
       tokenManager.clearAuth();
@@ -97,11 +138,30 @@ protectedApi.interceptors.response.use(
       }
     }
 
+    // Notify global UI with friendly message
+    try {
+      const message = getErrorMessage(error as any);
+      GlobalUIController.notifyError({ message, code: error.response?.status, raw: error.response?.data });
+    } catch {}
+
+    // Retry mechanism for retryable errors
+    try {
+      const cfg = (error.config as any) || {};
+      cfg.__retryCount = cfg.__retryCount || 0;
+      const MAX_RETRIES = cfg.__maxRetries ?? 2;
+
+      if (isRetryableError(error) && cfg.__retryCount < MAX_RETRIES) {
+        cfg.__retryCount += 1;
+        const delay = Math.pow(2, cfg.__retryCount) * 250;
+        await new Promise((r) => setTimeout(r, delay));
+        return protectedApi.request(cfg);
+      }
+    } catch (retryErr) {
+      // ignore retry errors
+    }
+
     if (process.env.NODE_ENV === 'development') {
-      console.error(
-        '[Protected API Error]',
-        error.response?.data || error.message
-      );
+      console.error('[Protected API Error]', error.response?.data || error.message);
     }
 
     return Promise.reject(error);
