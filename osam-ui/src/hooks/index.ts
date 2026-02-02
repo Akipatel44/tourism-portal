@@ -5,3 +5,5 @@
 
 export { usePlaces } from './usePlaces';
 export { usePlace } from './usePlace';
+export { useEvents } from './useEvents';
+export { useEvent } from './useEvent';
