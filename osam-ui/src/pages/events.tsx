@@ -1,31 +1,38 @@
 import React from 'react';
 import Layout from '../components/Layout';
-import EventCard, { EventCardProps } from '../components/EventCard';
+import { EventCard } from '../components/EventCard';
+import { Event } from '@/api/types/api';
 import PastEventCard, { PastEventCardProps } from '../components/PastEventCard';
 
 // Upcoming events data
-const UPCOMING_EVENTS: EventCardProps[] = [
+const UPCOMING_EVENTS: Event[] = [
   {
     id: '1',
-    title: 'Osam Hill Marathon: 1000 Stairs Race',
-    date: 'March 22, 2025',
-    duration: '1 day',
+    name: 'Osam Hill Marathon: 1000 Stairs Race',
+    date: '2025-03-22',
+    time: '06:00',
     description:
       'Challenge yourself on a legendary 1000-stair mountain race! Starting from the base of Osam Hill, runners will ascend the ancient stone steps, conquering steep climbs while taking in breathtaking views. This race celebrates human endurance and the spiritual journey of mountain climbing. All skill levels welcome.',
-    image: 'https://images.unsplash.com/photo-1552674605-5defe6aa44bb?w=600&h=400&fit=crop',
+    image_url: 'https://images.unsplash.com/photo-1552674605-5defe6aa44bb?w=600&h=400&fit=crop',
     location: 'Osam Hill Base to Summit',
-    ctaText: 'Register Now',
+    status: 'upcoming' as const,
+    attendees_count: 500,
+    created_at: '2025-01-01T00:00:00Z',
+    updated_at: '2025-01-01T00:00:00Z',
   },
   {
     id: '2',
-    title: 'Ashadhi Beej Mela: Monsoon Festival',
-    date: 'June 8-10, 2025',
-    duration: '3 days',
+    name: 'Ashadhi Beej Mela: Monsoon Festival',
+    date: '2025-06-08',
+    time: '10:00',
     description:
       'Experience the vibrant Ashadhi Beej Festival celebrating the start of monsoon season! Join thousands of pilgrims in processions, temple ceremonies, cultural performances, and local food fairs. The festival honors ancient traditions while celebrating the life-giving rains that transform the hills into emerald valleys.',
-    image: 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=600&h=400&fit=crop',
+    image_url: 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=600&h=400&fit=crop',
     location: 'Osam Hill Temple & Surrounding Villages',
-    ctaText: 'Learn About Festival',
+    status: 'upcoming' as const,
+    attendees_count: 5000,
+    created_at: '2025-01-01T00:00:00Z',
+    updated_at: '2025-01-01T00:00:00Z',
   },
 ];
 
@@ -103,7 +110,7 @@ export default function EventsPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {UPCOMING_EVENTS.map((event) => (
-              <EventCard key={event.id} {...event} />
+              <EventCard key={event.id} event={event} />
             ))}
           </div>
         </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Place } from '@/api/types/api';
 
-interface PlaceCardProps {
+export interface PlaceCardProps {
   place: Place;
 }
 

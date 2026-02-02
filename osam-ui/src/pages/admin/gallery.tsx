@@ -77,11 +77,11 @@ export default function GalleryManagement() {
   );
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<GalleryFormData> = {};
+    const newErrors: Partial<Record<keyof GalleryFormData, string>> = {};
     if (!formData.title.trim()) newErrors.title = 'Image title is required';
     if (!formData.category) newErrors.category = 'Category is required';
     if (!formData.caption.trim()) newErrors.caption = 'Caption is required';
-    setErrors(newErrors);
+    setErrors(newErrors as Partial<GalleryFormData>);
     return Object.keys(newErrors).length === 0;
   };
 

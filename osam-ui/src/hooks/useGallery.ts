@@ -132,7 +132,7 @@ const useGallery = ({
             category,
           });
 
-      setItems(response.results);
+      setItems(response.items || []);
       setPagination({
         page: response.page,
         page_size: response.page_size,

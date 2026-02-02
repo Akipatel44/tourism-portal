@@ -7,5 +7,5 @@ export { usePlaces } from './usePlaces';
 export { usePlace } from './usePlace';
 export { useEvents } from './useEvents';
 export { useEvent } from './useEvent';
-export { useGallery } from './useGallery';
-export { useGalleryItem } from './useGalleryItem';
+export { default as useGallery } from './useGallery';
+export { default as useGalleryItem } from './useGalleryItem';

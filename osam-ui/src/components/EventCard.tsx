@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Event } from '@/api/types/api';
 
-interface EventCardProps {
+export interface EventCardProps {
   event: Event;
 }
 
