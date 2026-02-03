@@ -2,6 +2,8 @@
 Authentication schemas for FastAPI validation.
 """
 
+from __future__ import annotations
+
 from pydantic import BaseModel, Field, EmailStr, validator
 from typing import Optional
 from datetime import datetime
@@ -28,7 +30,7 @@ class TokenResponse(BaseModel):
     access_token: str = Field(..., description="JWT access token")
     token_type: str = Field(default="bearer", description="Token type (always 'bearer')")
     expires_in: int = Field(..., description="Token expiration in seconds")
-    user: Optional["UserResponse"] = Field(None, description="Current user info")
+    user: "UserResponse | None" = Field(None, description="Current user info")
 
     class Config:
         json_schema_extra = {
