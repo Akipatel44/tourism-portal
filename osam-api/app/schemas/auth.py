@@ -24,6 +24,33 @@ class LoginRequest(BaseModel):
         }
 
 
+class UserResponse(BaseModel):
+    """Schema for user response (no password)."""
+    
+    user_id: int
+    username: str
+    email: str
+    role: str
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+        json_schema_extra = {
+            "example": {
+                "user_id": 1,
+                "username": "admin",
+                "email": "admin@example.com",
+                "role": "admin",
+                "is_active": True,
+                "created_at": "2024-01-13T12:00:00",
+                "updated_at": "2024-01-13T12:00:00"
+            }
+        }
+
+
 class TokenResponse(BaseModel):
     """Schema for JWT token response."""
     
@@ -91,33 +118,6 @@ class UserUpdate(BaseModel):
         if v not in valid_roles:
             raise ValueError(f'Role must be one of {valid_roles}')
         return v
-
-
-class UserResponse(BaseModel):
-    """Schema for user response (no password)."""
-    
-    user_id: int
-    username: str
-    email: str
-    role: str
-    is_active: bool
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
-
-        json_schema_extra = {
-            "example": {
-                "user_id": 1,
-                "username": "admin",
-                "email": "admin@example.com",
-                "role": "admin",
-                "is_active": True,
-                "created_at": "2024-01-13T12:00:00",
-                "updated_at": "2024-01-13T12:00:00"
-            }
-        }
 
 
 class ChangePasswordRequest(BaseModel):
